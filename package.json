@@ -1,0 +1,12 @@
+{
+  "name": "modozSocket",
+  "version": "0.0.0",
+  "description": "Modozzang Socket server",
+  "main": "app.js",
+  "author": "JD",
+  "private": true,
+  "license": "BSD",
+  "dependencies": {
+    "express": "3.4.8"
+  }
+}

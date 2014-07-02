@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>bi-directional communication</title>
+ <script src="http://cdn.socket.io/socket.io-1.0.0-pre5.js"></script>
+  <script>
+
+  Date.prototype.yyyymmdd = function() {         
+                                
+        var yyyy = this.getFullYear().toString();                                    
+        var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based         
+        var dd  = this.getDate().toString();             
+                            
+        return yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]);
+   };  
+
+
+
+     var socket = io.connect('http://localhost:8080');
+     socket.on('connect', function() {
+        socket.emit('addme', prompt('Who are you?'));
+     });
+
+    
+
+     socket.on('chat',function(username, data) {
+       var p = document.createElement('p');
+       p.innerHTML = username + ':  ' + data;
+       document.getElementById('output').appendChild(p);
+     });
+
+     window.addEventListener('load',function() {
+        document.getElementById('sendtext').addEventListener('click',
+            function() {
+          var d = new Date();
+    var currentDate = d.yyyymmdd();
+    alert(currentDate);
+    var d2 = new Date();
+    d2.setDate(d2.getDate() + 1);
+    var nextDate = d2.yyyymmdd();
+alert(nextDate);
+            }, false);
+      }, false);
+
+     window.addEventListener('load',function() {
+        document.getElementById('sendtest').addEventListener('click',
+            function() {
+              var userid = document.getElementById('userid').value;
+              var username = document.getElementById('username').value;
+              var userage = document.getElementById('userage').value;
+              var data = {id : userid, name : username, age : userage};
+              alert(data);
+              socket.emit('test', data);
+            }, false);
+      }, false);
+
+     window.addEventListener('load',function() {
+        document.getElementById('sendlent').addEventListener('click',
+            function() {
+              var cellphone = document.getElementById('cellphone').value;
+              var itemcode = document.getElementById('itemcode').value;
+              var rstation = document.getElementById('rstation').value;
+              var data = {CustCode : cellphone, ItemCode : itemcode, RStation: rstation};
+              socket.emit('lent', data);
+            }, false);
+      }, false);
+
+</script>
+</head>
+<body>
+<div id="output"></div>
+<div id="send">
+  <input type="text" id="data" size="100" /><br />
+  <input type="button" id="sendtext" value="Send Text" /><br />
+  <br />
+  <input type="text" id="userid" size="100" /><br />
+  <input type="text" id="username" size="100" /><br />
+  <input type="text" id="userage" size="100" /><br />
+  <input type="button" id="sendtest" value="Send Test" /><br />
+  <br />
+  휴대폰:<input type="text" id="cellphone" size="100"  /><br />
+  아이템코드:<input type="text" id="itemcode" size="100" /><br />
+  대여지점코드:<input type="text" id="rstation" size="100" /><br />
+  <input type="button" id="sendlent" value="Send Lent" /><br />
+</div> 
+</body>
+</html>

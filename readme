@@ -1,0 +1,42 @@
+공통값 : 일자, 제품바코드, 회원휴대폰번호, 해당지점
+
+
+대여시:
+Jumunh 테이블 INSERT 1줄
+Sugumh 테이블 insert 3줄(Station 테이블과 policy 테이블 참조해서 정산금 뽑아내기) 단 지점인경우 1/2 
+item 테이블   update 
+                                                                   (policy참조)
+                                                                     총대여금                         대여상태,연체여부 대여지점  반납지점                              
+insert into jumunh values(jumundate, jumunno, custcode,    itemcode, totalamt, magamdate, returndate, state, delay,    rstation, tstation, adddate, updatedate, deleteyn)
+입력값                     대여일,    번호   , 휴대폰번호, 제품바코드 대여금액, 대여일+1                A      N                                     입력일        N
+
+                                               대여/반납 대여/판매 현/카    
+insert into sugumh values(sugumdate,  sugumno, rentgu,  sugumgu,  sugumc, station, custcode, jumundate, jumuno, totalamt, adddate,  updatedate, deleteyn)
+입력값                    수금일      수금번호  R        A1        A2     지점코드,휴대폰번호,대여일,   대여번호,정산금액,입력일                'N'    
+
+update item set itemCount=itemCount+1, station=대여지점 where itemcode=제품코드
+
+
+
+반납시
+Jumun 테이블 update 
+Sugumh 테이블 1줄 (policy 테이블 참조해서 1/2 반납지점 몫 insert)
+item 테이블 update
+
+
+update jumunh set tstation=반납지점 where itemcode=제품코드 and state='A' and  Delay='N' And deleteyn='N'
+
+insert into sugumh values(sugumdate,  sugumno, rentgu,  sugumgu, sugumc, station, custcode, jumundate, jumuno, totalamt, adddate,  updatedate, deleteyn)
+입력값                    수금일      수금번호  T       A1       A2     지점코드,휴대폰번호,대여일,   대여번호,정산금액,입력일                'N'   
+
+
+update item set  station=반납지점 where itemcode=제품코드 
+
+
+
+
+
+*함수 종류
+대여,반납,취소,제품입고,충전카운트  5개정도
+
+
