@@ -1,6 +1,7 @@
 var express = require('express')
   , app = express()
   , server = app.listen(8080)
+  , util = require('util')
   , io = require('socket.io').listen(server);
 
 var mysql = require("mysql");
@@ -12,7 +13,10 @@ var db = mysql.createConnection({
   user : "root",  
   password : "modo6521",
   database : "cjyo",
-  insecureAuth: true
+  // 이전 버전 mysql 접속 관련 속성
+  // insecureAuth: true,
+  // 저장프로시저 호출에서 ReturnValue 를 처리 하기 위한 추가 속성 
+  multipleStatements: true
 });
 
 // 데이터베이스 커넥션 오류 
@@ -96,9 +100,8 @@ io.sockets.on('connection', function (socket) {
         data.ItemCode+ " ::" +
         data.Station);
 
-    var result = false;
-
-    db.query("CALL BCharge(?, ?);", [
+    //var nReturn = 1;
+    db.query("CALL BCharge(?, ?,@nReturn); SELECT @nReturn;", [
         data.ItemCode, 
         data.Station], 
       function(err, result) {
@@ -108,11 +111,17 @@ io.sockets.on('connection', function (socket) {
             console.log(err);
         }
         else {
-          console.log(result);
-          socket.emit('isBReturned', { isBCharged: true });
+          console.log('JD=== RESULT...');
+          console.log('JD=== nReturn is...');
+          // 아래 값이 SP에서 리턴받은 값임
+          // TODO : 리턴 값에 따른 코드 처리 
+          console.log(result[1][0]['@nReturn']);
+
+          socket.emit('isBCharged', { isBCharged: true });
           console.log('JD===Success Procedure call...');
         }
       });
+
   });
 
   // 대여 - Simple Query
@@ -227,4 +236,5 @@ Date.prototype.yyyymmdd = function() {
   var dd  = this.getDate().toString();             
   return yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]);
 };  
+
 
